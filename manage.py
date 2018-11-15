@@ -6,6 +6,7 @@ from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 # 可以用来制定session的位置
 from flask_session import Session
+from flask_migrate import Migrate,MigrateCommand
 
 
 class Config(object):
