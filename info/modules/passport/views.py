@@ -34,11 +34,11 @@ def send_sms_code():
 
     # 2.校验参数(参数是否符合规则,判断是否有值)
 
-    if not all(mobile,image_code,image_code_id):
+    if not all([mobile,image_code,image_code_id]):
         # {"errno":"4100","errmsg":"参数有误"}
         return jsonify(errno=RET.PARAMERR,errmsg="参数有误")
     # 校验手机号是否正确
-    if not re.match('1[35678]\\d{9}'):
+    if not re.match('1[35678]\\d{9}',mobile):
         return jsonify(errno=RET.PARAMERR,errmsg="手机号格式不正确")
     # 3.先从redis中取出真实的验证码内容
     try:
@@ -48,7 +48,7 @@ def send_sms_code():
         return jsonify(errno=RET.DBERR,errmsg="数据查询失败")
 
     if not real_image_code:
-        return jsonify(errno=RET.DBERR,errmsg="图片验证码已过期")
+        return jsonify(errno=RET.NODATA,errmsg="图片验证码已过期")
 
     # 4.与用户的验证码内容进行对比,如果对比不一致,那么返回验证码输入错误
     if real_image_code.upper() !=image_code.upper():
@@ -59,13 +59,13 @@ def send_sms_code():
     sms_code_str = "%06d" % random.randint(0,999999)
     current_app.logger.debug("短信验证码内容是:%s" % sms_code_str)
     # 发送短信验证码
-    result = CCP().send_template_sms(mobile,[sms_code_str,constants.SMS_CODE_REDIS_EXPIRES/60],"1")
-    if result != 0:
-        # 代表发送不成功
-        return jsonify(errno=RET.DBERR,errmsg="短信发送失败")
-
+    # result = CCP().send_template_sms(mobile,[sms_code_str,constants.SMS_CODE_REDIS_EXPIRES/60],"1")
+    # if result != 0:
+    #     # 代表发送不成功
+    #     return jsonify(errno=RET.DBERR,errmsg="短信发送失败")
+    #
     try:
-        redis_store.set("SMS" + mobile, sms_code_str)
+        redis_store.set("SMS" + mobile, sms_code_str,constants.SMS_CODE_REDIS_EXPIRES)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="数据保存失败")
@@ -101,10 +101,10 @@ def get_image_code():
         return abort(403)
     # 3.生成图片验证码
     name,text,image = captcha.generate_captcha()
-
+    current_app.logger.debug(text)
     # 4.保存图片验证码文字到redis
     try:
-        redis_store.set("ImageCodeId" + image_code_id,text,constants.IMAGE_CODE_REDIS_EXPIRES)
+        redis_store.set("ImageCodeId_" + image_code_id,text,constants.IMAGE_CODE_REDIS_EXPIRES)
     except Exception as e:
         current_app.logger.error(e)
         abort(500)
