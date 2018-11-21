@@ -140,7 +140,7 @@ def send_sms_code():
     #     return jsonify(errno=RET.DBERR,errmsg="短信发送失败")
     #
     try:
-        redis_store.set("SMS" + mobile, sms_code_str,constants.SMS_CODE_REDIS_EXPIRES)
+        redis_store.set("SMS_" + mobile, sms_code_str,constants.SMS_CODE_REDIS_EXPIRES)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="数据保存失败")
