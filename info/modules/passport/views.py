@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import random
 import re
 
@@ -59,7 +59,10 @@ def register():
     user.nick_name = mobile
     # 记录用户最后一次登录时间
     user.last_login = datetime.now()
-    # TODO 对密码做处理
+    # 对密码做处理
+    # 需求:在设置password的时候,去对password进行加密,并且将加密结果给user.password_hash赋值
+    user.password = password
+
     # 6.将 user 模型添加数据库
     try:
         db.session.add(user)
@@ -192,7 +195,53 @@ def get_image_code():
     return response
 
 
+@passport_blu.route('/login',methods = ["POST"])
+def login():
+    """
+    登录
+    1.获取参数
+    2.校验参数
+    3.校验密码是否正确
+    4.保存用户的登录状态
+    5.响应
+    :return:
+    """
+
+    # 1.获取参数
+    params_dict = request.json
+    mobile = params_dict.get("mobile")
+    passport = params_dict.get("passport")
+
+    # 2.校验参数
+    if not all([mobile,passport]):
+        return jsonify(errno=RET.PARAMERR,errmsg="参数错误")
+
+    # 校验手机号是否正确
+    if not re.match('1[35678]\\d{9}',mobile):
+        return jsonify(errno=RET.PARAMERR,errmsg="手机号格式不正确")
+
+    # 3.校验密码是否正确
+    # 先查询出当前是否有指定手机号码的用户
+    try:
+        user = User.query.filter(User.mobile == mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="数据查询错误")
+    # 判断用户是否存在
+    if not user:
+        return jsonify(errno=RET.NODATA,errmsg="用户不存在")
+
+    # 校验登录的密码和当前用户的密码是否一致
+    if not user.check_password(passport):
+        return jsonify(errno=RET.PWDERR,errmsg="用户名或密码错误")
+
+    # 4.保存用户的登录状态
+    session["user_id"] = user.id
+    session["mobile"] = user.mobile
+    session["nick_name"] = user.nick_name
 
 
+    # 5.响应
+    return jsonify(errno=RET.OK,errmsg="登录成功")
 
 
