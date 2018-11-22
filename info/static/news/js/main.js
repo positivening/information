@@ -121,6 +121,28 @@ $(function(){
         }
 
         // 发起登录请求
+        var params = {
+            "mobole": mobile,
+            "passport":passport
+        }
+
+        $.ajax({
+            url:"/passport/login",
+            type:"post",
+            contentType:"application/json",
+            data:JSON.stringify(params),
+            success:function (resp) {
+                if (resp.errno == "0"){
+                    //代表登录成功
+                    location.reload()
+                }else{
+                    alert(resp.errmsg)
+                    $("#register-password-err").html(resp.errmsg)
+                    $("#register-password-err").show()
+                }
+            }
+        })
+
     })
 
 
@@ -223,7 +245,6 @@ function sendSMSCode() {
         "mobile":mobile,
         "image_code":imageCode,
         "image_code_id":imageCodeId
-
     }
 
     // 发起注册请求
