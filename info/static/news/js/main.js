@@ -122,8 +122,8 @@ $(function(){
 
         // 发起登录请求
         var params = {
-            "mobole": mobile,
-            "passport":passport
+            "mobile": mobile,
+            "password":password
         }
 
         $.ajax({

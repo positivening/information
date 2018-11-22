@@ -24,7 +24,7 @@ def index():
             current_app.logger.error(e)
 
     data = {
-        "user":user.to.dict() if user else None
+        "user":user.to_dict() if user else None
     }
 
 
