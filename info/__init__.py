@@ -47,8 +47,9 @@ def create_app(config_name):
     # 开启当前项目 CSRF 保护,只做服务器验证功能
     # 帮我们做了:从cookie中取出随机,然后进行校验,并且响应校验结果
     # 我们需要做:1.在界面加载的时候,往cookie中添加一个csrf_token,并且在表单中添加一个隐藏的csrf_token
+    # 而我们现在登录或者注册不是使用表单,而是使用ajax请求,所以我们需要在ajax请求的时候带上csrf_token
+    CSRFProtect(app)
 
-    # CSRFProtect(app)
 
     # 设置session 保存指定位置
     Session(app)
