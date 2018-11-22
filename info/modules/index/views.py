@@ -1,6 +1,6 @@
 from flask import render_template, current_app, session
 
-from info import redis_store
+from info import redis_store, constants
 from info.models import User, News
 from . import index_blu
 
@@ -26,7 +26,7 @@ def index():
     # 右侧的新闻排行的逻辑
     news_list = []
     try:
-        news_list = News.query.order_by(News.clicks.desc()).limit(6)
+        news_list = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
     except Exception as e:
         current_app.logger.error(e)
 
@@ -42,7 +42,7 @@ def index():
 
     data = {
         "user":user.to_dict() if user else None,
-        "new_dict_li":news_dict_li
+        "news_dict_li":news_dict_li
     }
 
 
