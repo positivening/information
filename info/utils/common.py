@@ -20,6 +20,7 @@ def do_index_class(index):
 
 
 def user_login_data(f):
+    # 使用 functools.wraps 去装饰内层函数，可以保持当前装饰器去装饰的函数的 __name__的值不变
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         user_id = session.get("user_id", None)
@@ -33,6 +34,9 @@ def user_login_data(f):
         g.user = user
         return f(*args, **kwargs)
     return wrapper
+
+
+
 
 
 
