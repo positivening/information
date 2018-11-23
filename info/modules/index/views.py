@@ -2,11 +2,13 @@ from flask import render_template, current_app, session, request, jsonify
 
 from info import redis_store, constants
 from info.models import User, News, Category
+from info.utils.common import user_login_data
 from info.utils.response_code import RET
 from . import index_blu
 
 
 @index_blu.route('/')
+@user_login_data
 def index():
     """
     显示首页

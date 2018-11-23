@@ -1,10 +1,13 @@
-from flask import render_template, session, current_app
+from flask import render_template, session, current_app, g
 
 from info import constants
 from info.models import User, News
 from info.modules.news import news_blu
 
 # 127.0.0.1:5000/news/2
+
+
+
 @news_blu.route('/<int:news_id>')
 def news_detail(news_id):
     """
@@ -14,14 +17,8 @@ def news_detail(news_id):
     """
 
     # 查询用户登录信息
-    user_id = session.get("user_id",None)
-    user = None
-    if user_id:
-        #尝试查询用户的模型
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
+    user = g.user
+
 
 
     # 右侧的新闻排行逻辑
