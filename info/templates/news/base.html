@@ -50,7 +50,7 @@
 
         {% endblock %}
 
-        </ul>
+        {% block rankBlock %}
         <div class="rank_con fr">
             {% block authorBlock %}
 
@@ -65,7 +65,8 @@
                 {% endfor %}
 
             </ul>
-        </div>
+            </div>
+        {% endblock %}
     </div>
     <div class="footer">
         <div class="footer_links">
