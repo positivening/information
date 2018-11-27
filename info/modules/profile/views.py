@@ -24,7 +24,6 @@ def user_news_list():
         page = 1
 
     user = g.user
-
     news_list = []
     total_page = 1
     current_page = 1
@@ -39,7 +38,7 @@ def user_news_list():
 
     news_dict_li = []
     for news in news_list:
-        news_dict_li.append(news.to_basic_dict())
+        news_dict_li.append(news.to_review_dict())
 
     data = {
         "news_list": news_dict_li,
